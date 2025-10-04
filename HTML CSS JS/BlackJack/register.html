@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Blackjack</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="auth-container">
+        <h2>♦️ Register for Blackjack ♥️</h2>
+        
+        <form onsubmit="event.preventDefault(); register();">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+                <small style="color: #ccc; display: block; margin-top: 5px;">
+                    Must contain: 1 uppercase, 1 lowercase, 1 number, min 6 characters
+                </small>
+            </div>
+            
+            <div class="form-group">
+                <label for="repassword">Confirm Password</label>
+                <input type="password" id="repassword" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="color">Favorite Color</label>
+                <input type="color" id="color" value="#d4af37" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Register</button>
+        </form>
+        
+        <p style="text-align: center; margin-top: 20px; color: #ccc;">
+            Already have an account? <a href="index.html" style="color: #d4af37;">Login here</a>
+        </p>
+    </div>
+    
+    <script src="main.js"></script>
+</body>
+</html>

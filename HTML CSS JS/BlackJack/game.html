@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body id="gamePage">
+    <div class="container">
+        <header>
+            <h1>♠️ BLACKJACK ♣️</h1>
+            <div class="user-info">
+                <span>Welcome, <strong id="displayUsername">Player</strong></span>
+            </div>
+        </header>
+
+        <div class="chips-display">
+            <div class="chips-card">
+                <div class="chips-icon">💰</div>
+                <div class="chips-label">Your Chips</div>
+                <div class="chips-value" id="playerChips">1000</div>
+            </div>
+            <div class="chips-card">
+                <div class="chips-icon">🎲</div>
+                <div class="chips-label">Current Bet</div>
+                <div class="chips-value" id="currentBet">0</div>
+            </div>
+        </div>
+
+        <div class="betting-section">
+            <h3>Place Your Bet</h3>
+            <div class="bet-buttons">
+                <button onclick="placeBet(10)" class="bet-btn">10 Chips</button>
+                <button onclick="placeBet(20)" class="bet-btn">20 Chips</button>
+                <button onclick="placeBet(50)" class="bet-btn">50 Chips</button>
+                <button onclick="placeBet(100)" class="bet-btn">100 Chips</button>
+            </div>
+        </div>
+
+        <div class="game-stats">
+            <div class="stat-card">
+                <div class="stat-label">Hand Number</div>
+                <div class="stat-value" id="hn">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Cards Left</div>
+                <div class="stat-value" id="deckcount">52</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Wins</div>
+                <div class="stat-value" id="totalWins">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Losses</div>
+                <div class="stat-value" id="totalLosses">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Draws</div>
+                <div class="stat-value" id="totalDraws">0</div>
+            </div>
+        </div>
+
+        <div class="status-message" id="status" style="display: none;">
+            Game Status
+        </div>
+
+        <div class="game-area">
+            <div id="players"></div>
+        </div>
+
+        <div class="controls">
+            <button onclick="hitMe()" id="hitBtn" class="btn btn-success">Hit</button>
+            <button onclick="stay()" id="stayBtn" class="btn btn-warning">Stay</button>
+        </div>
+
+        <div class="links">
+            <a href="leaderboard.html" class="link-btn">View Leaderboard</a>
+            <a href="index.html" class="link-btn">Logout</a>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
