@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medieval Snake</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Georgia', serif;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255, 200, 100, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 150, 50, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(40, 30, 20, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            border: 4px solid #8b6914;
+            box-shadow: 0 0 40px rgba(139, 105, 20, 0.5), inset 0 0 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            color: #f4d03f;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: #c9a961;
+            font-style: italic;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .game-board {
+            background: 
+                linear-gradient(90deg, rgba(60, 50, 40, 0.5) 1px, transparent 1px),
+                linear-gradient(rgba(60, 50, 40, 0.5) 1px, transparent 1px),
+                linear-gradient(135deg, #2d2416 0%, #3a2f1e 100%);
+            background-size: 20px 20px, 20px 20px, 100% 100%;
+            border: 6px solid #5a4a2a;
+            border-radius: 10px;
+            box-shadow: 
+                0 0 20px rgba(0, 0, 0, 0.8),
+                inset 0 0 30px rgba(0, 0, 0, 0.6);
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .score-item {
+            background: rgba(20, 15, 10, 0.7);
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 2px solid #8b6914;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .score-label {
+            color: #c9a961;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            color: #f4d03f;
+            font-size: 1.8em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .controls {
+            margin-top: 20px;
+            color: #c9a961;
+            font-size: 0.9em;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(20, 10, 0, 0.95);
+            padding: 30px 50px;
+            border-radius: 15px;
+            border: 4px solid #8b6914;
+            box-shadow: 0 0 50px rgba(139, 105, 20, 0.8);
+            display: none;
+            z-index: 10;
+        }
+
+        .game-over h2 {
+            color: #f44336;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
+        }
+
+        .game-over p {
+            color: #c9a961;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+        }
+
+        .game-over button {
+            background: linear-gradient(135deg, #8b6914 0%, #b8860b 100%);
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.2em;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Georgia', serif;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s;
+        }
+
+        .game-over button:hover {
+            background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+        }
+
+        .torch {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            animation: flicker 2s infinite;
+        }
+
+        .torch.top-left { top: -10px; left: -10px; }
+        .torch.top-right { top: -10px; right: -10px; }
+        .torch.bottom-left { bottom: -10px; left: -10px; }
+        .torch.bottom-right { bottom: -10px; right: -10px; }
+
+        @keyframes flicker {
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 10px #ff6600); }
+            50% { filter: brightness(1.3) drop-shadow(0 0 15px #ff8800); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚔️ MEDIEVAL SNAKE ⚔️</h1>
+        <p class="subtitle">Guide thy serpent to feast upon the golden apples!</p>
+        
+        <div class="score-board">
+            <div class="score-item">
+                <div class="score-label">Score</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">High Score</div>
+                <div class="score-value" id="highScore">0</div>
+            </div>
+        </div>
+
+        <div style="position: relative;">
+            <canvas id="gameCanvas" class="game-board" width="400" height="400"></canvas>
+            <div class="torch top-left">🔥</div>
+            <div class="torch top-right">🔥</div>
+            <div class="torch bottom-left">🔥</div>
+            <div class="torch bottom-right">🔥</div>
+            
+            <div class="game-over" id="gameOver">
+                <h2>💀 THOU HAST PERISHED! 💀</h2>
+                <p id="finalScore"></p>
+                <button onclick="restartGame()">Quest Again</button>
+            </div>
+        </div>
+
+        <div class="controls">
+            Use Arrow Keys or WASD to guide thy serpent
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const gridSize = 20;
+        const tileCount = canvas.width / gridSize;
+
+        let snake = [{x: 10, y: 10}];
+        let dx = 0;
+        let dy = 0;
+        let foodX = 15;
+        let foodY = 15;
+        let score = 0;
+        let highScore = 0;
+        let gameRunning = false;
+        let gameLoop;
+
+        function drawSnake() {
+            snake.forEach((segment, index) => {
+                const gradient = ctx.createLinearGradient(
+                    segment.x * gridSize, 
+                    segment.y * gridSize, 
+                    segment.x * gridSize + gridSize, 
+                    segment.y * gridSize + gridSize
+                );
+                
+                if (index === 0) {
+                    gradient.addColorStop(0, '#2d5016');
+                    gradient.addColorStop(1, '#3d7020');
+                } else {
+                    gradient.addColorStop(0, '#4a752c');
+                    gradient.addColorStop(1, '#5a9538');
+                }
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(segment.x * gridSize + 1, segment.y * gridSize + 1, gridSize - 2, gridSize - 2);
+                
+                ctx.strokeStyle = '#1a3010';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(segment.x * gridSize + 1, segment.y * gridSize + 1, gridSize - 2, gridSize - 2);
+
+                if (index === 0) {
+                    ctx.fillStyle = '#ff0000';
+                    ctx.beginPath();
+                    ctx.arc(segment.x * gridSize + 7, segment.y * gridSize + 7, 2, 0, Math.PI * 2);
+                    ctx.arc(segment.x * gridSize + 13, segment.y * gridSize + 7, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+        }
+
+        function drawFood() {
+            const gradient = ctx.createRadialGradient(
+                foodX * gridSize + gridSize / 2,
+                foodY * gridSize + gridSize / 2,
+                2,
+                foodX * gridSize + gridSize / 2,
+                foodY * gridSize + gridSize / 2,
+                gridSize / 2
+            );
+            gradient.addColorStop(0, '#ffd700');
+            gradient.addColorStop(1, '#ff8c00');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(foodX * gridSize + gridSize / 2, foodY * gridSize + gridSize / 2, gridSize / 2 - 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.strokeStyle = '#b8860b';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function moveSnake() {
+            if (dx === 0 && dy === 0 || !gameRunning) return;
+
+            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+
+            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
+                endGame();
+                return;
+            }
+
+            for (let segment of snake) {
+                if (segment.x === head.x && segment.y === head.y) {
+                    endGame();
+                    return;
+                }
+            }
+
+            snake.unshift(head);
+
+            if (head.x === foodX && head.y === foodY) {
+                score++;
+                document.getElementById('score').textContent = score;
+                if (score > highScore) {
+                    highScore = score;
+                    document.getElementById('highScore').textContent = highScore;
+                }
+                generateFood();
+            } else {
+                snake.pop();
+            }
+        }
+
+        function generateFood() {
+            foodX = Math.floor(Math.random() * tileCount);
+            foodY = Math.floor(Math.random() * tileCount);
+
+            for (let segment of snake) {
+                if (segment.x === foodX && segment.y === foodY) {
+                    generateFood();
+                    return;
+                }
+            }
+        }
+
+        function draw() {
+            ctx.fillStyle = '#2d2416';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            drawFood();
+            drawSnake();
+        }
+
+        function gameStep() {
+            if (!gameRunning) return;
+            moveSnake();
+            draw();
+        }
+
+        function startGame() {
+            if (!gameRunning) {
+                gameRunning = true;
+                gameLoop = setInterval(gameStep, 100);
+            }
+        }
+
+        function endGame() {
+            clearInterval(gameLoop);
+            gameRunning = false;
+            document.getElementById('finalScore').textContent = `Thy score: ${score}`;
+            document.getElementById('gameOver').style.display = 'block';
+        }
+
+        function restartGame() {
+            snake = [{x: 10, y: 10}];
+            dx = 0;
+            dy = 0;
+            score = 0;
+            document.getElementById('score').textContent = score;
+            document.getElementById('gameOver').style.display = 'none';
+            generateFood();
+            draw();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (!gameRunning && (e.key.startsWith('Arrow') || 'wasd'.includes(e.key.toLowerCase()))) {
+                if (dx === 0 && dy === 0) {
+                    startGame();
+                }
+                return;
+            }
+
+            if (!gameRunning) return;
+
+            switch(e.key) {
+                case 'ArrowUp':
+                case 'w':
+                case 'W':
+                    if (dy === 0) { dx = 0; dy = -1; }
+                    break;
+                case 'ArrowDown':
+                case 's':
+                case 'S':
+                    if (dy === 0) { dx = 0; dy = 1; }
+                    break;
+                case 'ArrowLeft':
+                case 'a':
+                case 'A':
+                    if (dx === 0) { dx = -1; dy = 0; }
+                    break;
+                case 'ArrowRight':
+                case 'd':
+                case 'D':
+                    if (dx === 0) { dx = 1; dy = 0; }
+                    break;
+            }
+        });
+
+        generateFood();
+        draw();
+    </script>
+</body>
+</html>
